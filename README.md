@@ -1,6 +1,47 @@
-# Getting Started with Create React App
+# Apollo Embeddable Explorer Demo App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a create-react-app that has been setup to embed the Studio explorer and relay all network requests through the parent page where it is hosted.
+
+## Operations
+
+In the explorer, first run
+
+```
+mutation Test {
+    login
+}
+```
+
+to get your auth key, then add an `Authorization` header with your auth key as the value, and you can run this set of demo operations.
+
+Running the subscription first, then the mutation will show you updated results from the websocket.
+
+```
+query ExampleQuery {
+  me {
+    email
+  }
+  tripsBooked
+}
+
+mutation Mutation($bookTripsLaunchIds: [ID]!) {
+  bookTrips(launchIds: $bookTripsLaunchIds) {
+    message
+  }
+}
+
+subscription test {
+  tripsBooked
+}
+```
+
+Variables:
+
+```
+{
+  "bookTripsLaunchIds": ["109", "108", "107"]
+}
+```
 
 ## Available Scripts
 
