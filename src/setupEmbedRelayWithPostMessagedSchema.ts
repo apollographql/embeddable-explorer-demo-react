@@ -5,8 +5,9 @@ export type JSONPrimitive = boolean | null | string | number;
 export type JSONObject = { [key in string]?: JSONValue };
 export type JSONValue = JSONPrimitive | JSONValue[] | JSONObject;
 
+// NOTE: when you want to manually introspect a schema, don't include a graphRef here
 export const EMBEDDABLE_EXPLORER_URL =
-  "https://explorer.embed.apollographql.com/?graphRef=Apollo-Fullstack-Demo-o3tsz8@current&docsPanelState=closed";
+  "https://explorer.embed.apollographql.com/?docsPanelState=closed";
 
 const SUBSCRIPTION_TERMINATION = "ExplorerSubscriptionTermination";
 const EXPLORER_QUERY_MUTATION_REQUEST = "ExplorerRequest";
@@ -129,7 +130,7 @@ async function executeSubscription({
   window.addEventListener("message", checkForSubscriptionTermination);
 }
 
-export function setupEmbedRelay() {
+export function setupEmbedRelayWithPostMessagedSchema() {
   const onPostMessageReceived = (
     event: MessageEvent<{
       name?: string;
@@ -139,13 +140,24 @@ export function setupEmbedRelay() {
       headers?: Record<string, string>;
     }>
   ) => {
-    console.log("post message received", event);
+    console.log("pm", event);
     const embeddedExplorerIFrame =
       (document.getElementById("embedded-explorer") as HTMLIFrameElement) ??
       undefined;
-
+    // NOTE: pass in your own sdl or your own IntrospectionResult
     // Embedded Explorer sends us a PM when it has loaded
     if (event.data.name === "ExplorerLoaded") {
+      embeddedExplorerIFrame.contentWindow?.postMessage(
+        {
+          name: "IntrospectionSchema",
+          // NOTE: Put your schema document here
+          schema: `type Query {
+          apolloTestSchema: String
+        }`,
+        },
+        EMBEDDABLE_EXPLORER_URL
+      );
+
       // You can set an operation to show on load by sending a SetOperation message
       embeddedExplorerIFrame?.contentWindow?.postMessage(
         {

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import './App.css';
-import { EMBEDDABLE_EXPLORER_URL, setUpEmbedRelay } from './setupEmbedRelay';
+import { EMBEDDABLE_EXPLORER_URL, setupEmbedRelay } from './setupEmbedRelay';
 
 export type JSONPrimitive = boolean | null | string | number;
 export type JSONObject = { [key in string]?: JSONValue };
@@ -9,7 +9,7 @@ export type JSONValue = JSONPrimitive | JSONValue[] | JSONObject;
 export const App = ()=> {
 
   useEffect(() => {
-    setUpEmbedRelay();
+    setupEmbedRelay();
   }, [])
 
   return (
