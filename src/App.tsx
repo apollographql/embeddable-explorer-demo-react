@@ -15,9 +15,11 @@ export const App = ()=> {
 
   // Provide iframe options via URL query parameters
   // When you want to manually introspect a schema, don't include a graphRef here
+  // When you want to make network requests from the Explorer, change `postMessageOperations` to false
   const explorerURL = EMBEDDABLE_EXPLORER_URL +
   '?graphRef=Apollo-Fullstack-Demo-o3tsz8@current' +
-  '&docsPanelState=closed';
+  '&docsPanelState=closed' +
+  '&postMessageOperations=true';
 
   return (
     <div className="App">
