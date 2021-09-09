@@ -1,6 +1,7 @@
 import "./App.css";
 import { SubscriptionClient } from "subscriptions-transport-ws";
 import {
+  EMBEDDABLE_EXPLORER_URL,
   EXPLORER_LISTENING_FOR_STATE,
   EXPLORER_QUERY_MUTATION_REQUEST,
   EXPLORER_QUERY_MUTATION_RESPONSE,
@@ -14,8 +15,6 @@ export type JSONPrimitive = boolean | null | string | number;
 export type JSONObject = { [key in string]?: JSONValue };
 export type JSONValue = JSONPrimitive | JSONValue[] | JSONObject;
 
-export const EMBEDDABLE_EXPLORER_URL =
-  "https://explorer.embed.apollographql.com/?graphRef=Apollo-Fullstack-Demo-o3tsz8@current&docsPanelState=closed";
 function getHeadersWithContentType(
   headers: Record<string, string> | undefined
 ) {
@@ -154,29 +153,29 @@ export function setupEmbedRelay() {
         {
           name: SET_OPERATION,
           operation: `
-  # Run this first to get an api key
-  # and set your Authorization header to that api key
-  mutation Login {
-    login
+# Run this first to get an api key
+# and set your Authorization header to that api key
+mutation Login {
+  login
+}
+
+query TripsBookedQuery {
+  me {
+    email
   }
-  
-  query TripsBookedQuery {
-    me {
-      email
-    }
-    tripsBooked
+  tripsBooked
+}
+
+mutation BookTripsMutation($bookTripsLaunchIds: [ID]!) {
+  bookTrips(launchIds: $bookTripsLaunchIds) {
+    message
   }
-  
-  mutation BookTripsMutation($bookTripsLaunchIds: [ID]!) {
-    bookTrips(launchIds: $bookTripsLaunchIds) {
-      message
-    }
-  }
-  
-  subscription TripsBookedSubscription {
-    tripsBooked
-  }
-            `,
+}
+
+subscription TripsBookedSubscription {
+  tripsBooked
+}
+          `,
           variables: JSON.stringify({ bookTripsLaunchIds: ["108", "109"] }),
         },
         EMBEDDABLE_EXPLORER_URL

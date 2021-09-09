@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import './App.css';
-import { EMBEDDABLE_EXPLORER_URL, setupEmbedRelay } from './setupEmbedRelay';
+import { EMBEDDABLE_EXPLORER_URL } from './constants';
+import { setupEmbedRelay } from './setupEmbedRelay';
 
 export type JSONPrimitive = boolean | null | string | number;
 export type JSONObject = { [key in string]?: JSONValue };
@@ -12,10 +13,16 @@ export const App = ()=> {
     setupEmbedRelay();
   }, [])
 
+  // Provide iframe options via URL query parameters
+  // When you want to manually introspect a schema, don't include a graphRef here
+  const explorerURL = EMBEDDABLE_EXPLORER_URL +
+  '?graphRef=Apollo-Fullstack-Demo-o3tsz8@current' +
+  '&docsPanelState=closed';
+
   return (
     <div className="App">
       <h1 className="demo-app-title">Apollo's Embedded Explorer Demo App</h1>
-      <iframe id="embedded-explorer" className="embedded-explorer-iframe"title="embedded-explorer" src={EMBEDDABLE_EXPLORER_URL}/>
+      <iframe id="embedded-explorer" className="embedded-explorer-iframe"title="embedded-explorer" src={explorerURL}/>
     </div>
   );
 }

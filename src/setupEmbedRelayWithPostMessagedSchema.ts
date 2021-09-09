@@ -1,6 +1,7 @@
 import "./App.css";
 import { SubscriptionClient } from "subscriptions-transport-ws";
 import {
+  EMBEDDABLE_EXPLORER_URL,
   EXPLORER_LISTENING_FOR_SCHEMA,
   EXPLORER_LISTENING_FOR_STATE,
   EXPLORER_QUERY_MUTATION_REQUEST,
@@ -15,10 +16,6 @@ import {
 export type JSONPrimitive = boolean | null | string | number;
 export type JSONObject = { [key in string]?: JSONValue };
 export type JSONValue = JSONPrimitive | JSONValue[] | JSONObject;
-
-// NOTE: when you want to manually introspect a schema, don't include a graphRef here
-export const EMBEDDABLE_EXPLORER_URL =
-  "https://explorer.embed.apollographql.com/?docsPanelState=closed";
 
 function getHeadersWithContentType(
   headers: Record<string, string> | undefined
@@ -151,13 +148,12 @@ export function setupEmbedRelayWithPostMessagedSchema() {
     const embeddedExplorerIFrame =
       (document.getElementById("embedded-explorer") as HTMLIFrameElement) ??
       undefined;
-    // NOTE: pass in your own sdl or your own IntrospectionResult
-    // Embedded Explorer sends us a PM when it has loaded
+    // Embedded Explorer sends us a PM when it is ready for a schema
     if (event.data.name === EXPLORER_LISTENING_FOR_SCHEMA) {
       embeddedExplorerIFrame.contentWindow?.postMessage(
         {
           name: SCHEMA_RESPONSE,
-          // NOTE: Put your schema document here
+          // Replace this schema with your own sdl or your own IntrospectionQuery
           schema: `type Query {
           apolloTestSchema: String
         }`,
