@@ -152,11 +152,10 @@ export function setupEmbedRelay() {
       embeddedExplorerIFrame?.contentWindow?.postMessage(
         {
           name: SET_OPERATION,
-          operation: `
-# Run this first to get an api key
+          operation: `# Run this first to get an api key
 # and set your Authorization header to that api key
 mutation Login {
-  login
+  login(email: $loginEmail)
 }
 
 query TripsBookedQuery {
@@ -176,7 +175,10 @@ subscription TripsBookedSubscription {
   tripsBooked
 }
           `,
-          variables: JSON.stringify({ bookTripsLaunchIds: ["108", "109"] }),
+          variables: JSON.stringify({
+            bookTripsLaunchIds: ["108", "109"],
+            loginEmail: "demo@apollographql.com",
+          }),
         },
         EMBEDDABLE_EXPLORER_URL
       );
