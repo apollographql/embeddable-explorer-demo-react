@@ -154,7 +154,7 @@ export function setupEmbedRelay() {
           name: SET_OPERATION,
           operation: `# Run this first to get an api key
 # and set your Authorization header to that api key
-mutation Login {
+mutation Login($loginEmail: String) {
   login(email: $loginEmail)
 }
 
