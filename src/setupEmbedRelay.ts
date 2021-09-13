@@ -2,13 +2,11 @@ import "./App.css";
 import { SubscriptionClient } from "subscriptions-transport-ws";
 import {
   EMBEDDABLE_EXPLORER_URL,
-  EXPLORER_LISTENING_FOR_STATE,
   EXPLORER_QUERY_MUTATION_REQUEST,
   EXPLORER_QUERY_MUTATION_RESPONSE,
   EXPLORER_SUBSCRIPTION_REQUEST,
   EXPLORER_SUBSCRIPTION_RESPONSE,
   EXPLORER_SUBSCRIPTION_TERMINATION,
-  SET_OPERATION,
 } from "./constants";
 
 export type JSONPrimitive = boolean | null | string | number;
@@ -146,43 +144,6 @@ export function setupEmbedRelay() {
     const embeddedExplorerIFrame =
       (document.getElementById("embedded-explorer") as HTMLIFrameElement) ??
       undefined;
-
-    // You can set an operation to show on load by sending a SetOperation message
-    if (event.data.name === EXPLORER_LISTENING_FOR_STATE) {
-      embeddedExplorerIFrame?.contentWindow?.postMessage(
-        {
-          name: SET_OPERATION,
-          operation: `# Run this first to get an api key
-# and set your Authorization header to that api key
-mutation Login($loginEmail: String) {
-  login(email: $loginEmail)
-}
-
-query TripsBookedQuery {
-  me {
-    email
-  }
-  tripsBooked
-}
-
-mutation BookTripsMutation($bookTripsLaunchIds: [ID]!) {
-  bookTrips(launchIds: $bookTripsLaunchIds) {
-    message
-  }
-}
-
-subscription TripsBookedSubscription {
-  tripsBooked
-}
-          `,
-          variables: JSON.stringify({
-            bookTripsLaunchIds: ["108", "109"],
-            loginEmail: "demo@apollographql.com",
-          }),
-        },
-        EMBEDDABLE_EXPLORER_URL
-      );
-    }
 
     const isQueryOrMutation =
       "name" in event.data &&

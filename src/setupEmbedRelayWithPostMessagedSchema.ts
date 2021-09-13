@@ -3,14 +3,12 @@ import { SubscriptionClient } from "subscriptions-transport-ws";
 import {
   EMBEDDABLE_EXPLORER_URL,
   EXPLORER_LISTENING_FOR_SCHEMA,
-  EXPLORER_LISTENING_FOR_STATE,
   EXPLORER_QUERY_MUTATION_REQUEST,
   EXPLORER_QUERY_MUTATION_RESPONSE,
   EXPLORER_SUBSCRIPTION_REQUEST,
   EXPLORER_SUBSCRIPTION_RESPONSE,
   EXPLORER_SUBSCRIPTION_TERMINATION,
   SCHEMA_RESPONSE,
-  SET_OPERATION,
 } from "./constants";
 
 export type JSONPrimitive = boolean | null | string | number;
@@ -157,41 +155,6 @@ export function setupEmbedRelayWithPostMessagedSchema() {
           schema: `type Query {
           apolloTestSchema: String
         }`,
-        },
-        EMBEDDABLE_EXPLORER_URL
-      );
-    }
-
-    // You can set an operation to show on load by sending a SetOperation message
-    if (event.data.name === EXPLORER_LISTENING_FOR_STATE) {
-      embeddedExplorerIFrame?.contentWindow?.postMessage(
-        {
-          name: SET_OPERATION,
-          operation: `
-# Run this first to get an api key
-# and set your Authorization header to that api key
-mutation Login {
-  login
-}
-
-query TripsBookedQuery {
-  me {
-    email
-  }
-  tripsBooked
-}
-
-mutation BookTripsMutation($bookTripsLaunchIds: [ID]!) {
-  bookTrips(launchIds: $bookTripsLaunchIds) {
-    message
-  }
-}
-
-subscription TripsBookedSubscription {
-  tripsBooked
-}
-          `,
-          variables: JSON.stringify({ bookTripsLaunchIds: ["108", "109"] }),
         },
         EMBEDDABLE_EXPLORER_URL
       );

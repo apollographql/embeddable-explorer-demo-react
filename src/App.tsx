@@ -19,7 +19,41 @@ export const App = ()=> {
   const explorerURL = EMBEDDABLE_EXPLORER_URL +
   '?graphRef=Apollo-Fullstack-Demo-o3tsz8@current' +
   '&docsPanelState=closed' +
-  '&postMessageOperations=true';
+  '&postMessageOperations=true'+
+  `&document=${window.encodeURIComponent(`# Run this first to get an api key
+# and set your Authorization header to that api key
+mutation Login($loginEmail: String) {
+  login(email: $loginEmail)
+}
+
+query TripsBookedQuery {
+  me {
+    email
+  }
+  tripsBooked
+}
+
+mutation BookTripsMutation($bookTripsLaunchIds: [ID]!) {
+  bookTrips(launchIds: $bookTripsLaunchIds) {
+    message
+  }
+}
+
+subscription TripsBookedSubscription {
+  tripsBooked
+}`)}` +
+      `&variables=${window.encodeURIComponent(
+        JSON.stringify({
+          bookTripsLaunchIds: ["108", "109"],
+          loginEmail: "demo@apollographql.com",
+        })
+      )}` +
+      `&searcQuery=Query.me` +
+      `&headers=${window.encodeURIComponent(
+        JSON.stringify({
+          ExampleHeader: "hello"
+        })
+      )}`;
 
   return (
     <div className="App">
