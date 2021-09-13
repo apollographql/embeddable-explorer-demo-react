@@ -200,7 +200,7 @@ subscription TripsBookedSubscription {
         event.data;
       if (isQueryOrMutation) {
         executeOperation({
-          operation: event.data.operation,
+          operation,
           operationName,
           variables,
           headers,
