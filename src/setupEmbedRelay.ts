@@ -9,10 +9,8 @@ import {
   EXPLORER_SUBSCRIPTION_TERMINATION,
 } from "./constants";
 
-export type JSONPrimitive = boolean | null | string | number;
-export type JSONObject = { [key in string]?: JSONValue };
-export type JSONValue = JSONPrimitive | JSONValue[] | JSONObject;
-
+// Helper function that adds content-type: application/json
+// to each request's headers if not present
 function getHeadersWithContentType(
   headers: Record<string, string> | undefined
 ) {
@@ -27,6 +25,7 @@ function getHeadersWithContentType(
   return headersWithContentType;
 }
 
+// Function for executing operations
 async function executeOperation({
   operation,
   operationName,
@@ -38,11 +37,12 @@ async function executeOperation({
   operation: string;
   operationId: string;
   operationName?: string;
-  variables?: JSONValue;
+  variables?: Record<string, string>;
   headers?: Record<string, string>;
   embeddedExplorerIFrame?: HTMLIFrameElement;
 }) {
   const response = await fetch(
+    // Substitute your server's URL for this example URL.
     "https://apollo-fullstack-tutorial.herokuapp.com/",
     {
       method: "POST",
@@ -55,8 +55,12 @@ async function executeOperation({
     }
   );
   await response.json().then((response) => {
+    // After the operation completes, post a response message to the
+    // iframe that includes the response data
     embeddedExplorerIFrame?.contentWindow?.postMessage(
       {
+        // Include the same operation ID in the response message's name
+        // so the Explorer knows which operation it's associated with
         name: EXPLORER_QUERY_MUTATION_RESPONSE,
         operationId,
         response,
@@ -66,6 +70,7 @@ async function executeOperation({
   });
 }
 
+// Function for executing subscriptions
 async function executeSubscription({
   operation,
   operationName,
@@ -76,7 +81,7 @@ async function executeSubscription({
 }: {
   operation: string;
   operationName?: string;
-  variables?: JSONValue;
+  variables?: Record<string, string>;
   headers?: Record<string, string>;
   embeddedExplorerIFrame?: HTMLIFrameElement;
   operationId: string;
@@ -84,6 +89,7 @@ async function executeSubscription({
   const getClient = () => {
     try {
       return new SubscriptionClient(
+        // Substitute your server's subscription URL for this example URL.
         "wss://apollo-fullstack-tutorial.herokuapp.com/graphql",
         {
           reconnect: true,
@@ -105,8 +111,12 @@ async function executeSubscription({
     })
     .subscribe({
       next(response) {
+        // Everytime you get a subscription response,
+        // post a response message to the iframe that includes the response data
         embeddedExplorerIFrame?.contentWindow?.postMessage(
           {
+            // Include the same operation ID in the response message's name
+            // so the Explorer knows which operation it's associated with
             name: EXPLORER_SUBSCRIPTION_RESPONSE,
             operationId,
             response,
@@ -131,32 +141,39 @@ async function executeSubscription({
 }
 
 export function setupEmbedRelay() {
+  // Callback definition
   const onPostMessageReceived = (
     event: MessageEvent<{
       name?: string;
       operation?: string;
       operationId?: string;
       operationName?: string;
-      variables?: string;
+      variables?: Record<string, string>;
       headers?: Record<string, string>;
     }>
   ) => {
+    // Obtain the iframe element by any applicable logic for your page.
+    // This obtains an element with ID `embedded-explorer`.
     const embeddedExplorerIFrame =
       (document.getElementById("embedded-explorer") as HTMLIFrameElement) ??
       undefined;
 
+    // Check to see if the posted message indicates that the user is
+    // executing a query or mutation or subscription in the Explorer
     const isQueryOrMutation =
       "name" in event.data &&
       event.data.name === EXPLORER_QUERY_MUTATION_REQUEST;
     const isSubscription =
       "name" in event.data && event.data.name === EXPLORER_SUBSCRIPTION_REQUEST;
 
+    // If the user is executing a query or mutation or subscription...
     if (
       (isQueryOrMutation || isSubscription) &&
       event.data.name &&
       event.data.operation &&
       event.data.operationId
     ) {
+      // Extract the operation details from the event.data object
       const { operation, operationId, operationName, variables, headers } =
         event.data;
       if (isQueryOrMutation) {
@@ -180,5 +197,6 @@ export function setupEmbedRelay() {
       }
     }
   };
+  // Execute our callback whenever window.postMessage is called
   window.addEventListener("message", onPostMessageReceived);
 }
