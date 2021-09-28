@@ -15,11 +15,12 @@ export const App = ()=> {
 
   // Provide iframe options via URL query parameters
   // When you want to manually introspect a schema, don't include a graphRef here
-  // When you want to make network requests from the Explorer, change `postMessageOperations` to false
+  // When you want to make network requests from the Explorer, change `sendRequestsFrom` to 'embed'
   const explorerURL = EMBEDDABLE_EXPLORER_URL +
   '?graphRef=Apollo-Fullstack-Demo-o3tsz8@current' +
   '&docsPanelState=closed' +
-  '&postMessageOperations=true'+
+  '&sendRequestsFrom=parent'+
+  '&shouldPersistState=false'+
   `&document=${window.encodeURIComponent(`# Run this first to get an api key
 # and set your Authorization header to that api key
 mutation Login($loginEmail: String) {
