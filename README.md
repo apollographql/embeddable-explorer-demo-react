@@ -1,3 +1,7 @@
+# Archival
+This repo was archived by the Apollo Security team on 2023-05-26
+
+
 # Apollo Embeddable Explorer Demo App
 
 This is a create-react-app that has been setup to embed the Studio explorer and relay all network requests through the parent page where it is hosted.
